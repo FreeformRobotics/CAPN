@@ -21,40 +21,42 @@ Context-aware Peer Netowrk for Unbiased Scene Graph Generation
     - [Explanation of R@K, mR@K, zR@K, ng-R@K, ng-mR@K, ng-zR@K, A@K, S2G](METRICS.md#explanation-of-our-metrics)
     - [Output Format](METRICS.md#output-format-of-our-code)
     - [Reported Results](METRICS.md#reported-results)
-5. [Scene Graph Generation as RoI_Head](#scene-graph-generation-as-RoI_Head)
-6. [Training on Scene Graph Generation](#perform-training-on-scene-graph-generation)
-7. [Evaluation on Scene Graph Generation](#Evaluation)
-8. [Other Options that May Improve the SGG](#other-options-that-may-improve-the-SGG)
-9. [Tips and Tricks for TDE on any Unbiased Task](#tips-and-Tricks-for-any-unbiased-taskX-from-biased-training)
-10. [Frequently Asked Questions](#frequently-asked-questions)
+5. [Training on Scene Graph Generation](#perform-training-on-scene-graph-generation)
+6. [Evaluation on Scene Graph Generation](#Evaluation)
 14. [Citations](#Citations)
+14. [Acknowledgement](#Acknowledgement)
 
 ## Overview
 
 This project aims to build a new CODEBASE of Scene Graph Generation (SGG), and it is also a Pytorch implementation of the paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949). The previous widely adopted SGG codebase [neural-motifs](https://github.com/rowanz/neural-motifs) is detached from the recent development of Faster/Mask R-CNN. Therefore, I decided to build a scene graph benchmark on top of the well-known [maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark) project and define relationship prediction as an additional roi_head. By the way, thanks to their elegant framework, this codebase is much more novice-friendly and easier to read/modify for your own projects than previous neural-motifs framework(at least I hope so). It is a pity that when I was working on this project, the [detectron2](https://github.com/facebookresearch/detectron2) had not been released, but I think we can consider [maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark) as a more stable version with less bugs, hahahaha. I also introduce all the old and new metrics used in SGG, and clarify two common misunderstandings in SGG metrics in [METRICS.md](METRICS.md), which cause abnormal results in some papers.
 
-
-
 Models | PredCls R@50/100 | PredCls mR@50/100 | SGCls R@50/100 | SGCls mR@50/100 | SGGen R@50/100 | SGGen mR@50/100 
 -- | -- | -- | -- | -- | -- | -- 
 VCTree-CAPN | 58.3 / 60.2      | 37.4 / 40.0 | 38.5 / 39.6 | 24.1 / 25.1 | 27.0 / 31.0    | 16.0 / 18.9 
-
-
 
 ### The illustration of the Context-aware Peer Network 
 
 ![alt text](demo/capn.jpg)
 
+
+
 ## Installation
 
 Check [INSTALL.md](INSTALL.md) for installation instructions.
+
+
 
 ## Dataset
 
 Check [DATASET.md](DATASET.md) for instructions of dataset preprocessing.
 
+
+
 ## Metrics and Results **(IMPORTANT)**
+
 Explanation of metrics in our toolkit and reported results are given in [METRICS.md](METRICS.md)
+
+
 
 ## Pretrained Models
 
@@ -64,12 +66,6 @@ After you download the [Faster R-CNN model](https://onedrive.live.com/embed?cid=
 
 The above pretrained Faster R-CNN model achives 38.52/26.35/28.14 mAp on VG train/val/test set respectively.
 
-
-## Scene Graph Generation as RoI_Head
-
-To standardize the SGG, I define scene graph generation as an RoI_Head. Referring to the design of other roi_heads like box_head, I put most of the SGG codes under ```maskrcnn_benchmark/modeling/roi_heads/relation_head``` and their calling sequence is as follows:
-
-![alt text](demo/relation_head.png "structure of relation_head")
 
 
 ## Perform training on Scene Graph Generation
@@ -90,7 +86,7 @@ For **Scene Graph Detection (SGDet)**:
 sh scripts/motifs/train_capn_sgdet.sh
 ```
 
-### Predefined Models
+### Different Baseline Models
 There are three baseline models used for training, you can either pick one for training.
 
 For [Motifs](https://arxiv.org/abs/1711.06640) Model:
@@ -111,8 +107,7 @@ sh scripts/transformer/train_capn_predcls.sh
 
 ## Evaluation
 
-### Examples of the Test Command
-Test Example 1 : (PreCls, Motif Model)
+Test Example 1 : (PreCls, Motif-CAPN Model)
 ```bash
 sh scripts/motifs/test_capn_predcls.sh
 ```
@@ -141,3 +136,9 @@ If you find this project helps your research, please kindly consider citing our 
   year={2022}
 }
 ```
+
+
+
+## Acknowledgements
+
+ https://github.com/KaihuaTang/Scene-Graph-Benchmark.pytorch/
