@@ -28,11 +28,17 @@ Context-aware Peer Netowrk for Unbiased Scene Graph Generation
 
 ## Overview
 
-This project aims to build a new CODEBASE of Scene Graph Generation (SGG), and it is also a Pytorch implementation of the paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949). The previous widely adopted SGG codebase [neural-motifs](https://github.com/rowanz/neural-motifs) is detached from the recent development of Faster/Mask R-CNN. Therefore, I decided to build a scene graph benchmark on top of the well-known [maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark) project and define relationship prediction as an additional roi_head. By the way, thanks to their elegant framework, this codebase is much more novice-friendly and easier to read/modify for your own projects than previous neural-motifs framework(at least I hope so). It is a pity that when I was working on this project, the [detectron2](https://github.com/facebookresearch/detectron2) had not been released, but I think we can consider [maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark) as a more stable version with less bugs, hahahaha. I also introduce all the old and new metrics used in SGG, and clarify two common misunderstandings in SGG metrics in [METRICS.md](METRICS.md), which cause abnormal results in some papers.
 
-Models | PredCls R@50/100 | PredCls mR@50/100 | SGCls R@50/100 | SGCls mR@50/100 | SGGen R@50/100 | SGGen mR@50/100 
+
+The performance of proposed CAPN is shown in the following  Table.
+
+Tasks | PredCls | PredCls | SGCls | SGCls | SGGen | SGGen 
 -- | -- | -- | -- | -- | -- | -- 
+Models | R@50/100 | mR@50/100 | R@50/100 | mR@50/100 | R@50/100 | mR@50/100 
+Motifs-CAPN | 55.3 / 57.4 | 37.9 / 40.1 | 34.6 /  35.5 | 19.3 / 21.3 | 28.2 / 32.3 | 16.2 / 18.8 
 VCTree-CAPN | 58.3 / 60.2      | 37.4 / 40.0 | 38.5 / 39.6 | 24.1 / 25.1 | 27.0 / 31.0    | 16.0 / 18.9 
+
+
 
 ### The illustration of the Context-aware Peer Network 
 
