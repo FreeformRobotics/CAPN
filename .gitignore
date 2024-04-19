@@ -1,0 +1,61 @@
+# compilation and distribution
+__pycache__
+_ext
+*.pyc
+*.so
+maskrcnn_benchmark.egg-info/
+build/
+dist/
+# apex
+apex/
+# cocoapi
+cocoapi/
+# datasets
+datasets/
+# figs
+figs/
+# visual_genome_python_driver
+visual_genome_python_driver/
+# logs
+logs/
+# glove
+glove/
+# build
+build
+# output
+output
+
+# ipython/jupyter notebooks
+#*.ipynb
+**/.ipynb_checkpoints/
+
+# checkpoint
+checkpoint/
+
+# dataset
+datasets/vg/
+*.png
+*.jpg
+*.jpeg
+
+# Editor temporaries
+*.swn
+*.swo
+*.swp
+*~
+
+# Pycharm editor settings
+.idea
+
+# vscode editor settings
+.vscode
+
+# MacOS
+.DS_Store
+
+# Checkpoints
+checkpoints/
+
+# visualization
+visualization/
+
