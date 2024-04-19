@@ -185,5 +185,10 @@ To visualize the detected scene graphs of custom images, you can follow the jupy
 If you find this project helps your research, please kindly consider citing our project or papers in your publications.
 
 ```
-
+@article{zhou2022context,
+  title={Context-aware peer network for unbiased scene graph generation},
+  author={Zhou, Liguang and Zhou, Yuhongze and Hu, Junjie and Lam, Tin Lun and Xu, Yangsheng},
+  journal={arXiv preprint arXiv:2208.07109},
+  year={2022}
+}
 ```
