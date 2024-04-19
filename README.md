@@ -30,7 +30,7 @@ Context-aware Peer Netowrk for Unbiased Scene Graph Generation
 
 
 
-The performance of proposed CAPN is shown in the following  Table.
+The performance of proposed context-aware peer network (CAPN) is shown in the following  Table.
 
 Tasks | PredCls | PredCls | SGCls | SGCls | SGGen | SGGen 
 -- | -- | -- | -- | -- | -- | -- 
