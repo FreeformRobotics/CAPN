@@ -120,9 +120,19 @@ sh scripts/motifs/test_capn_predcls.sh
 
 
 ## Visualize Detected SGs of Custom Images
-To visualize the detected scene graphs of custom images, you can follow the jupyter note: [visualization/3.visualize_custom_SGDet.jpynb](https://github.com/FreeformRobotics/CAPN/blob/main/visualization/3.visualize_custom_SGDet.ipynb). The inputs of our visualization code are custom_prediction.json and custom_data_info.json in DETECTED_SGG_DIR. They will be automatically generated if you run the above custom SGDet instruction successfully. Note that there may be too much trivial bounding boxes and relationships, so you can select top-k bbox and predicates for better scene graphs by change parameters box_topk and rel_topk. 
+The visualization of SGG in three tasks can be found in the following links:
 
+PredCls and SGCls:
 
+```
+https://github.com/FreeformRobotics/CAPN/blob/main/visualization/1.visualize_PredCls_and_SGCls.ipynb
+```
+
+SGDet:
+
+```
+https://github.com/FreeformRobotics/CAPN/blob/main/visualization/3.visualize_custom_SGDet.ipynb
+```
 
 ## Citations
 
@@ -139,6 +149,6 @@ If you find this project helps your research, please kindly consider citing our 
 
 
 
-## Acknowledgements
+## Acknowledgement
 
- https://github.com/KaihuaTang/Scene-Graph-Benchmark.pytorch/
+[1] https://github.com/KaihuaTang/Scene-Graph-Benchmark.pytorch/
