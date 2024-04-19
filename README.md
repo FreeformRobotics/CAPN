@@ -4,7 +4,7 @@
 
 [![LICENSE](https://img.shields.io/badge/license-MIT-green)](https://github.com/KaihuaTang/Scene-Graph-Benchmark.pytorch/blob/master/LICENSE)
 [![Python](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/)
-![PyTorch](https://img.shields.io/badge/pytorch-1.4.0-%237732a8)
+![PyTorch](https://img.shields.io/badge/pytorch-1.6.0-%237732a8)
 
 Pytorch implementation of paper:
 
@@ -43,7 +43,7 @@ VCTree-CAPN | 58.3 / 60.2      | 37.4 / 40.0 | 38.5 / 39.6 | 24.1 / 25.1 | 27.0 
 
 ### The illustration of the Context-aware Peer Network 
 
-![alt text](demo/teaser_figure.png "from 'Unbiased Scene Graph Generation from Biased Training'")
+![alt text](demo/capn.jpg)
 
 ## Installation
 
