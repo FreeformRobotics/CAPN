@@ -11,7 +11,9 @@ import argparse
 import os
 import time
 import datetime
+import random
 
+import numpy as np
 import torch
 from torch.nn.utils import clip_grad_norm_
 
@@ -41,6 +43,13 @@ try:
     from apex import amp
 except ImportError:
     raise ImportError('Use APEX for multi-precision via apex.amp')
+
+
+def set_random_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
 
 
 def train(cfg, local_rank, distributed, logger):
@@ -401,6 +410,12 @@ def parser_argument(cfg):
         type=int,
         help="configure the number of experts for training",
     )
+    parser.add_argument(
+        "--seed",
+        default=42,
+        type=int,
+        help="Random seed for reproducible training",
+    )
 
     args = parser.parse_args()
 
@@ -434,6 +449,9 @@ def main():
         mkdir(output_dir)
 
     logger = setup_logger("maskrcnn_benchmark", output_dir, get_rank())
+    rank_offset = get_rank() if args.distributed else 0
+    set_random_seed(args.seed + rank_offset)
+    logger.info("Using random seed {} (rank offset {})".format(args.seed, rank_offset))
     logger.info("Using {} GPUs".format(num_gpus))
     logger.info(args)
 

@@ -1,163 +1,123 @@
-# Context-aware Peer Network for Unbiased Scene Graph Generation
+# CAPN: Context-Aware Peer Networks for Unbiased Scene Graph Generation
 
+Official PyTorch implementation of **Debiasing Scene Graph Generation with Context-Aware Peer Networks**, accepted by *Pattern Recognition* in 2026.
 
+CAPN augments Motifs, VCTree, and Transformer scene-graph backbones with three peer predictors and context-conditioned peer-level and predicate-level modulation. The method targets a better balance between conventional Recall (R@K) and mean Recall (mR@K) on long-tailed predicate distributions.
 
-[![LICENSE](https://img.shields.io/badge/license-MIT-green)](https://github.com/KaihuaTang/Scene-Graph-Benchmark.pytorch/blob/master/LICENSE)
-[![Python](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/)
-![PyTorch](https://img.shields.io/badge/pytorch-1.6.0-%237732a8)
-
-Pytorch implementation of paper:
-
-Context-aware Peer Netowrk for Unbiased Scene Graph Generation 
-
-
-
-## Contents
-
-1. [Overview](#Overview)
-2. [Install the Requirements](INSTALL.md)
-3. [Prepare the Dataset](DATASET.md)
-4. [Metrics and Results for our Toolkit](METRICS.md)
-    - [Explanation of R@K, mR@K, zR@K, ng-R@K, ng-mR@K, ng-zR@K, A@K, S2G](METRICS.md#explanation-of-our-metrics)
-    - [Output Format](METRICS.md#output-format-of-our-code)
-    - [Reported Results](METRICS.md#reported-results)
-5. [Training on Scene Graph Generation](#perform-training-on-scene-graph-generation)
-6. [Evaluation on Scene Graph Generation](#Evaluation)
-14. [Citations](#Citations)
-14. [Acknowledgement](#Acknowledgement)
-
-## Overview
-
-
-
-The performance of proposed context-aware peer network (CAPN) is shown in the following  Table.
-
-Tasks | PredCls | PredCls | SGCls | SGCls | SGGen | SGGen 
--- | -- | -- | -- | -- | -- | -- 
-Models | R@50/100 | mR@50/100 | R@50/100 | mR@50/100 | R@50/100 | mR@50/100 
-Motifs-CAPN | 55.3 / 57.4 | 37.9 / 40.1 | 34.6 /  35.5 | 19.3 / 21.3 | 28.2 / 32.3 | 16.2 / 18.8 
-VCTree-CAPN | 58.3 / 60.2      | 37.4 / 40.0 | 38.5 / 39.6 | 24.1 / 25.1 | 27.0 / 31.0    | 16.0 / 18.9 
-Tranformer-CAPN | 55.1 / 57.2 | 37.4 / 39.9 | 33.2 / 34.1 | 23.1 / 24.5 | 27.4 / 31.6 | 16.9 / 19.5 
-
-
-
-
-
-### The illustration of the Context-aware Peer Network 
-
-![alt text](demo/capn.jpg)
-
-
+![CAPN overview](demo/capn.jpg)
 
 ## Installation
 
-Check [INSTALL.md](INSTALL.md) for installation instructions.
+Follow [INSTALL.md](INSTALL.md) to build the environment. The original experiments used Python 3.7, PyTorch 1.6, CUDA, and NVIDIA Apex mixed precision.
 
+## Datasets
 
+Follow [DATASET.md](DATASET.md) to prepare Visual Genome and Open Images V6. By default, the scripts expect:
 
-## Dataset
+- GloVe embeddings under `./glove`;
+- the pretrained Faster R-CNN checkpoint at `./checkpoints/pretrained_faster_rcnn/model_final.pth`;
+- dataset paths configured through `maskrcnn_benchmark/config/paths_catalog.py`.
 
-Check [DATASET.md](DATASET.md) for instructions of dataset preprocessing.
+Datasets and model checkpoints are not stored in Git.
 
+## Quick Start
 
+The recommended scripts use a common runner and support Motifs, VCTree, and Transformer under PredCls, SGCls, and SGDet.
 
-## Metrics and Results **(IMPORTANT)**
+Train Motifs-CAPN on PredCls with two GPUs:
 
-Explanation of metrics in our toolkit and reported results are given in [METRICS.md](METRICS.md)
-
-
-
-## Pretrained Models
-
-Since we tested many SGG models in our paper [Unbiased Scene Graph Generation from Biased Training](https://arxiv.org/abs/2002.11949), I won't upload all the pretrained SGG models here. However, you can download the [pretrained Faster R-CNN](https://onedrive.live.com/embed?cid=22376FFAD72C4B64&resid=22376FFAD72C4B64%21779870&authkey=AH5CPVb9g5E67iQ) we used in the paper, which is the most time consuming step in the whole training process (it took 4 2080ti GPUs). As to the SGG model, you can follow the rest instructions to train your own, which only takes 2 GPUs to train each SGG model. The results should be very close to the reported results given in [METRICS.md](METRICS.md)
-
-After you download the [Faster R-CNN model](https://onedrive.live.com/embed?cid=22376FFAD72C4B64&resid=22376FFAD72C4B64%21779870&authkey=AH5CPVb9g5E67iQ), please extract all the files to the directory `/home/username/checkpoints/pretrained_faster_rcnn`. To train your own Faster R-CNN model, please follow the next section.
-
-The above pretrained Faster R-CNN model achives 38.52/26.35/28.14 mAp on VG train/val/test set respectively.
-
-
-
-## Perform training on Scene Graph Generation
-
-There are **three standard protocols**: (1) Predicate Classification (PredCls): taking ground truth bounding boxes and labels as inputs, (2) Scene Graph Classification (SGCls) : using ground truth bounding boxes without labels, (3) Scene Graph Detection (SGDet): detecting SGs from scratch. We use two switches ```MODEL.ROI_RELATION_HEAD.USE_GT_BOX``` and ```MODEL.ROI_RELATION_HEAD.USE_GT_OBJECT_LABEL``` to select the protocols. 
-
-For **Predicate Classification (PredCls)**, we need to set:
-``` bash
-sh scripts/motifs/train_capn_predcls.sh
-```
-For **Scene Graph Classification (SGCls)**:
-
-``` bash
-sh scripts/motifs/train_capn_sgcls.sh
-```
-For **Scene Graph Detection (SGDet)**:
-``` bash
-sh scripts/motifs/train_capn_sgdet.sh
-```
-
-### Different Baseline Models
-There are three baseline models used for training, you can either pick one for training.
-
-For [Motifs](https://arxiv.org/abs/1711.06640) Model:
 ```bash
-sh scripts/motifs/train_capn_predcls.sh
+GPUS=0,1 SEED=42 bash scripts/motifs/train_capn_predcls.sh
 ```
-For [VCTree](https://arxiv.org/abs/1812.01880) Model:
+
+Evaluate a checkpoint directory:
+
 ```bash
-sh scripts/vctree/train_capn_predcls.sh
-```
-For Transformer Model:
-
-```
-sh scripts/transformer/train_capn_predcls.sh
+GPUS=0,1 \
+OUTPUT_DIR=./checkpoints/motifs-capn-predcls-seed42 \
+bash scripts/motifs/test_capn_predcls.sh
 ```
 
+The training output contains a `last_checkpoint` file that is loaded automatically. To evaluate a standalone checkpoint, append `MODEL.WEIGHT /path/to/model.pth`.
 
+Equivalent commands are available for all supported settings:
 
-## Evaluation
+```text
+scripts/<motifs|vctree|transformer>/<train|test>_capn_<predcls|sgcls|sgdet>.sh
+```
 
-Test Example 1 : (PreCls, Motif-CAPN Model)
+For example:
+
 ```bash
-sh scripts/motifs/test_capn_predcls.sh
+GPUS=0,1 SEED=42 bash scripts/vctree/train_capn_predcls.sh
+GPUS=0,1 SEED=42 bash scripts/transformer/train_capn_predcls.sh
 ```
 
-Test Example 2 : (PreCls, VCTree-CAPN Model)
+### Runtime Options
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `GPUS` | `0,1` | Comma-separated visible GPU IDs |
+| `SEED` | `42` | Training seed |
+| `GLOVE_DIR` | `./glove` | GloVe directory |
+| `DETECTOR_CKPT` | `./checkpoints/pretrained_faster_rcnn/model_final.pth` | Detector checkpoint |
+| `OUTPUT_DIR` | task-dependent | Training output or evaluation checkpoint directory |
+| `LOSS_OPTION` | `CAME_LOSS` | Relation loss |
+| `NUM_EXPERTS` | `3` | Number of peers |
+| `PER_CLASS_CONTEXT_AWARE` | backbone-dependent | Enable predicate-level context modulation |
+| `PER_CLASS_ALPHA` | `1.0` for Motifs, `0.5` otherwise | Predicate-level modulation coefficient |
+| `BASE_LR` | `0.01`, or `0.001` for Transformer | Base learning rate |
+| `TRAIN_BATCH` | `12` | Global training batch size |
+| `MAX_ITER` | `50000` | Maximum training iterations |
+| `SYNC_GATHER` | `False` | Index-safe distributed evaluation gathering |
+| `DRY_RUN` | `0` | Print the resolved command without running it |
+
+Additional configuration overrides can be appended to any wrapper:
+
 ```bash
-sh scripts/motifs/test_capn_predcls.sh
+GPUS=2,3 SEED=379 MAX_ITER=24000 \
+bash scripts/motifs/train_capn_predcls.sh SOLVER.VAL_PERIOD 1000
 ```
 
+## Results
 
+Results reported in the accepted manuscript on Visual Genome are:
 
-## Visualize Detected SGs of Custom Images
-The visualization of SGG in three tasks can be found in the following links:
+| Backbone | PredCls R@50/100 | PredCls mR@50/100 | SGCls R@50/100 | SGCls mR@50/100 | SGDet R@50/100 | SGDet mR@50/100 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Motifs-CAPN | 55.3 / 57.4 | 37.9 / 40.1 | 34.6 / 35.5 | 19.3 / 21.3 | 28.2 / 32.3 | 16.2 / 18.8 |
+| VCTree-CAPN | 58.3 / 60.2 | 37.4 / 40.0 | 38.5 / 39.6 | 24.1 / 25.1 | 27.0 / 31.0 | 16.0 / 18.9 |
+| Transformer-CAPN | 55.1 / 57.2 | 37.4 / 39.9 | 33.2 / 34.1 | 23.1 / 24.5 | 27.4 / 31.6 | 16.9 / 19.5 |
 
-PredCls and SGCls:
+Small differences can result from the CUDA/PyTorch version, distributed sampling, and random seed. Keep all settings fixed and vary only `SEED` for statistical studies.
 
-```
-https://github.com/FreeformRobotics/CAPN/blob/main/visualization/1.visualize_PredCls_and_SGCls.ipynb
-```
+See [METRICS.md](METRICS.md) for metric definitions and output formats.
 
-SGDet:
+## Open Images V6
 
-```
-https://github.com/FreeformRobotics/CAPN/blob/main/visualization/3.visualize_custom_SGDet.ipynb
-```
+Open Images V6 experiments use the SGDet protocol. The original scripts are available as `scripts/*/*_capn_sgdet_oviv6.sh`; set their dataset and detector paths before use.
 
-## Citations
+## Visualization
 
-If you find this project helps your research, please kindly consider citing our project or papers in your publications.
+- PredCls and SGCls: [visualization/1.visualize_PredCls_and_SGCls.ipynb](visualization/1.visualize_PredCls_and_SGCls.ipynb)
+- Custom SGDet: [visualization/3.visualize_custom_SGDet.ipynb](visualization/3.visualize_custom_SGDet.ipynb)
 
-```
-@article{zhou2022context,
-  title={Context-aware peer network for unbiased scene graph generation},
-  author={Zhou, Liguang and Zhou, Yuhongze and Hu, Junjie and Lam, Tin Lun and Xu, Yangsheng},
-  journal={arXiv preprint arXiv:2208.07109},
-  year={2022}
+## Checkpoints
+
+Large detector and SGG checkpoints are excluded from the source repository. Released models should document their backbone, task, seed, configuration, and reported metrics.
+
+## Citation
+
+```bibtex
+@article{zhou2026capn,
+  title   = {Debiasing Scene Graph Generation with Context-Aware Peer Networks},
+  author  = {Zhou, Liguang and Zhou, Yuhongze and Hu, Junjie and Lam, Tin Lun and Xu, Yangsheng},
+  journal = {Pattern Recognition},
+  year    = {2026},
+  note    = {Accepted}
 }
 ```
 
-
-
 ## Acknowledgement
 
-[1] https://github.com/KaihuaTang/Scene-Graph-Benchmark.pytorch/
+This project builds on [Scene-Graph-Benchmark.pytorch](https://github.com/KaihuaTang/Scene-Graph-Benchmark.pytorch) and the original implementations of Motifs and VCTree.

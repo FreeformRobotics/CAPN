@@ -10,8 +10,8 @@ dist/
 apex/
 # cocoapi
 cocoapi/
-# datasets
-datasets/
+# repository-level datasets
+/datasets/
 # figs
 figs/
 # visual_genome_python_driver
@@ -55,5 +55,4 @@ datasets/vg/
 
 # Checkpoints
 checkpoints/
-
 

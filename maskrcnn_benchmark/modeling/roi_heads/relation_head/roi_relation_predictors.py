@@ -1668,6 +1668,7 @@ class MotifPredictor_CAME(nn.Module):
         rel_dists_lst = []
         rel_dists_full_lst = []
         weighted_rel_dists_full_lst = []
+        weighted_rel_dists_full_sum = None
 
         if self.num_experts > 1:
             # if self.training:
@@ -1887,6 +1888,13 @@ class VCTreePredictor_CAME(nn.Module):
 
                 weighted_rel_dists_full_sum = torch.stack(weighted_rel_dists_full_lst, dim=0).sum(dim=0)
                 # print('weighted_rel_dists_full.shape:', weighted_rel_dists_full.shape)
+                weighted_rel_dists_full_sum = weighted_rel_dists_full_sum.split(num_rels, dim=0)
+            elif self.use_relation_aware_gating:
+                for i in range(len(rel_dists_full_lst)):
+                    weighted_rel_dists_full = beta_relation_aware_gating[i] * rel_dists_full_lst[i]
+                    weighted_rel_dists_full_lst.append(weighted_rel_dists_full)
+
+                weighted_rel_dists_full_sum = torch.stack(weighted_rel_dists_full_lst, dim=0).sum(dim=0)
                 weighted_rel_dists_full_sum = weighted_rel_dists_full_sum.split(num_rels, dim=0)
 
         elif self.num_experts == 1:

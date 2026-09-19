@@ -553,6 +553,8 @@ class ROIRelationHead(torch.nn.Module):
         if self.num_experts > 1:
             weighted_expert_relation_logits_lst = []    # list for storing the weighted expert info
             expert_relation_logits_lst = []             # merge individual experts into one list
+            relation_logits_lst = None
+            relation_logits_mean = None
 
             if self.use_relation_sampling:
                 # print('self.use_relation_sampling')
@@ -574,6 +576,7 @@ class ROIRelationHead(torch.nn.Module):
                                                                                                                                                           roi_features, 
                                                                                                                                                           union_features, 
                                                                                                                                                           logger)
+                relation_logits_mean = weighted_rel_dists_full_sum
             elif self.use_per_class_content_aware_matrix:
                 # print('self.use_per_class_content_aware_matrix')
                 refine_logits, relation_logits, add_losses, relation_logits_lst, weighted_rel_dists_full_sum = self.predictor(proposals, 
@@ -583,29 +586,27 @@ class ROIRelationHead(torch.nn.Module):
                                                                                                                               roi_features, 
                                                                                                                               union_features, 
                                                                                                                               logger)
+                relation_logits_mean = weighted_rel_dists_full_sum
 
 
             # if using the mixture-of-experts
             else:
                 # print('self.mixture-of-experts')
 
-                # refine_logits, relation_logits, add_losses, relation_logits_lst, weighted_rel_dists_full_sum, rel_dists_full_mean = self.predictor(proposals, rel_pair_idxs, rel_labels, rel_binarys, roi_features, union_features, logger)
+                predictor_outputs = self.predictor(
+                    proposals, rel_pair_idxs, rel_labels, rel_binarys,
+                    roi_features, union_features, logger
+                )
+                if len(predictor_outputs) == 3:
+                    refine_logits, relation_logits, add_losses = predictor_outputs
+                    relation_logits_mean = relation_logits
+                else:
+                    refine_logits, relation_logits, add_losses, relation_logits_lst = predictor_outputs[:4]
 
-                refine_logits, relation_logits, add_losses, relation_logits_lst = self.predictor(proposals, rel_pair_idxs, rel_labels, rel_binarys, roi_features, union_features, logger)
-
-
-                # Initialize an empty list to store the results
+            if relation_logits_lst is not None and relation_logits_mean is None:
                 relation_logits_mean = []
-                # print('relation_logits:', relation_logits.shape)
-                # print('relation_logits:', relation_logits_lst[0].shape, relation_logits_lst[1].shape, relation_logits_lst[2].shape)
-
-                # Loop over the tensors with the same shape
                 for i in range(len(relation_logits_lst[0])):
-                    # Stack the tensors with the same shape into a single tensor
-                    
                     relation_logits_all = torch.stack([relation_logits_lst[j][i] for j in range(len(relation_logits_lst))])
-            
-                    # Compute the mean along the first dimension of the stacked tensor
                     relation_logits_mean.append(torch.mean(relation_logits_all, dim=0))
 
         else:
@@ -614,8 +615,10 @@ class ROIRelationHead(torch.nn.Module):
         # for test
         if not self.training:
             if self.num_experts > 1:
+                if relation_logits_lst is None:
+                    result = self.post_processor((relation_logits, refine_logits), rel_pair_idxs, proposals)
                 # showing the performance of weighted experts
-                if self.use_relation_sampling:
+                elif self.use_relation_sampling:
                     # print('use_relation_sampling')
                     result, _ = self.expert_voting(relation_logits_lst, refine_logits, rel_pair_idxs, proposals)
                 
@@ -652,7 +655,11 @@ class ROIRelationHead(torch.nn.Module):
 
         # add multiple experts for loss evaluation
         if self.num_experts > 1:
-            if self.use_relation_sampling:
+            if relation_logits_lst is None:
+                loss_relation, loss_refine = self.loss_evaluator(
+                    proposals, rel_labels, relation_logits, refine_logits
+                )
+            elif self.use_relation_sampling:
                 # print('use_relation_sampling')
                 loss_relation, loss_refine = self.loss_evaluator(proposals, rel_labels, relation_logits, refine_logits,
                                                                  beta_relation_aware_gating=beta_relation_aware_gating,
