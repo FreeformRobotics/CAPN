@@ -1,4 +1,4 @@
-# CAPN: Context-Aware Peer Networks for Unbiased Scene Graph Generation
+# Debiasing Scene Graph Generation with Context-Aware Peer Networks
 
 Official PyTorch implementation of **Debiasing Scene Graph Generation with Context-Aware Peer Networks**, accepted by *Pattern Recognition* in 2026.
 
